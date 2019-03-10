@@ -1,8 +1,61 @@
 #include <Windows.h>
 #include <stdio.h>
-#include <dwmapi.h>
+#include "utils.h"
+#include <thread>
 
-#pragma comment(lib, "dwmapi.lib")
+boolean bGraphicsReady = false;
+
+utils h;
+
+
+void ReadLoop() {
+	while (true)
+	{
+		if (GetAsyncKeyState(VK_HOME) & 1)
+		{
+			h.RefreshOffset();
+		}
+		if (GetAsyncKeyState(VK_F8) & 1)
+		{
+			autobot = !autobot;
+		}
+		if (GetAsyncKeyState(VK_F5) & 1)
+		{
+			itemgoods = !itemgoods;
+		}
+		if (GetAsyncKeyState(VK_F6) & 1)
+		{
+			vehicle = !vehicle;
+		}
+		if (GetAsyncKeyState(VK_F9) & 1)
+		{
+			skeltch = !skeltch;
+		}
+		if (GetAsyncKeyState(VK_END) & 1)
+		{
+			h.DebugOffset();
+		}
+
+		if (bGraphicsReady) {
+			dx.Begin();
+			h.ActorLoop();
+			dx.End();
+		}
+		Sleep(1);
+	}
+}
+
+void FireNow()
+{
+	while (true)
+	{
+		if (((GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0 || (GetAsyncKeyState(VK_LSHIFT) & 0x8000) != 0))
+		{
+			h.Fire();
+		}
+		Sleep(20);
+	}
+}
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nShowCmd)
@@ -46,9 +99,41 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	SetLayeredWindowAttributes(hWnd, RGB(0, 0, 0), 0, LWA_COLORKEY);
 	ShowWindow(hWnd, nShowCmd);
 
-
 	MARGINS Margin = { -1 };
 	DwmExtendFrameIntoClientArea(hWnd, &Margin);
+
+
+	// dx init 
+	if (!(bGraphicsReady = dx.Init(hWnd, 1920, 1080)))
+	{
+		printf("DX Init Failed!\r\n");
+		system("pause");
+		return -1;
+	}
+	else
+	{
+		printf("DX Init Sucess!\r\n");
+	}
+	//
+
+	if (!h.Init())
+	{
+		printf("致命的错误,重开游戏后并重新运行该软件!\r\n");
+		system("pause");
+		return -1;
+	}
+
+
+	esp = true;
+	itemgoods = true;
+	vehicle = false;
+
+	thread ReadActors{ ReadLoop };
+	ReadActors.detach();
+
+
+	thread AimShoot{ FireNow };
+	AimShoot.detach();
 
 
 	MSG msg{};
@@ -75,7 +160,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message)
 	{
 	case WM_PAINT:
-		InvalidateRect(hwnd, NULL, true);
+		InvalidateRect(hwnd, NULL, false);
 		break;
 
 	case WM_DESTROY:

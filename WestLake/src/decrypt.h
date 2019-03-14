@@ -1,4 +1,7 @@
 #pragma once
+#ifndef DECRYPT_H
+#define DECRYPT_H
+
 #include <stdint.h>
 
 class decrypt
@@ -17,3 +20,4 @@ public:
 	uint64_t de_prop(uint64_t prop);
 };
 
+#endif

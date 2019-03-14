@@ -4,6 +4,7 @@ driver drv;
 graphics dx;
 decrypt dpt;
 mutex mx;
+mutex mxdx;
 
 uint64_t g_UGname = 0;
 uint64_t g_UWorld = 0;	//base->world

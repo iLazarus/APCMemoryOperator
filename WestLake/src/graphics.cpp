@@ -49,7 +49,7 @@ bool graphics::Init(HWND hWnd, UINT iWidth, UINT iHeight)
 	Parameters.EnableAutoDepthStencil = TRUE;
 	Parameters.AutoDepthStencilFormat = D3DFMT_D16;
 	Parameters.Windowed = TRUE;
-	Parameters.BackBufferCount = 3;
+	Parameters.BackBufferCount = 1;
 	Parameters.BackBufferFormat = D3DFMT_A8R8G8B8;
 	Parameters.BackBufferWidth = iWidth;
 	Parameters.BackBufferHeight = iHeight;

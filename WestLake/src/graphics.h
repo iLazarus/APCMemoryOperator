@@ -1,4 +1,10 @@
 #pragma once
+#ifndef GRAPHICS_H
+#define GRAPHICS_H
+
+
+
+
 #include <stdio.h>
 #include <iostream>
 #include <dwmapi.h> 
@@ -44,3 +50,5 @@ public:
 };
 
 
+
+#endif // !GRAPHICS_H

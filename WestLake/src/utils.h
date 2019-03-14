@@ -1,6 +1,8 @@
 #pragma once
-#include "common.h"
+#ifndef UTIL_H
+#define UTIL_H
 
+#include "common.h"
 #include <list>
 #include <vector>
 #include <string>
@@ -18,24 +20,13 @@ public:
 	void RefreshOffset();
 	void DebugOffset();
 	void ActorLoop();
-	void Esp();
+	void EspPlayers(list<uint64_t> players);
+	void EspItems(list<uint64_t> items);
+	void EspVehicles(list<uint64_t> vehicles);
 	void Fire();
 
 private:
 	list<PlayerData> aimList;
-
-	//vector<PlayerData> players_buf;
-	//vector<VehicleData> vehicles_buf;
-	//vector<ItemsData> items_buf;
-	//vector<ItemsData> loots_buf;
-	//vector<ItemsData> aircafts_buf;
-
-
-	//vector<PlayerData> players;
-	//vector<VehicleData> vehicles;
-	//vector<ItemsData> items;
-	//vector<ItemsData> loots;
-	//vector<ItemsData> aircafts;
 
 	list<int> upper_part = { 5, 6, 15 };
 	list<int> right_arm = { 5, 115, 116, 117 };
@@ -49,7 +40,7 @@ private:
 	vector<D3DCOLOR> Colors;
 	FCameraCacheEntry FCameraCache;
 
-	bool isPlayer(int id)
+	inline bool isPlayer(int id)
 	{
 		if (id < CachedNames.size())
 		{
@@ -62,7 +53,7 @@ private:
 		return false;
 	}
 
-	bool isVehicle(int id)
+	inline bool isVehicle(int id)
 	{
 		if (id < CachedNames.size())
 		{
@@ -73,7 +64,7 @@ private:
 		return false;
 	}
 
-	bool isItems(int id)
+	inline bool isItems(int id)
 	{
 		if (id < CachedNames.size())
 		{
@@ -85,7 +76,7 @@ private:
 		return false;
 	}
 
-	bool isAircaft(int id)
+	inline bool isAircaft(int id)
 	{
 		if (id < CachedNames.size())
 		{
@@ -97,7 +88,7 @@ private:
 		return false;
 	}
 
-	bool isLoot(int id)
+	inline bool isLoot(int id)
 	{
 		if (id < CachedNames.size())
 		{
@@ -109,7 +100,7 @@ private:
 		return false;
 	}
 
-	bool inScreen(Vector3 v)
+	inline bool inScreen(Vector3 v)
 	{
 		if (v.x > 0 && v.x < 1920 && v.y >0 && v.y < 1080) return true;
 		return false;
@@ -541,7 +532,7 @@ private:
 			CachedNames.push_back(name);
 			if (LOGCACHE)
 			{
-				log << i << "\t" << name.c_str() << "\r\n";
+				log << i << "\t" << name.c_str() << "\n";
 			}
 		}
 		log.close();
@@ -666,7 +657,7 @@ private:
 				//float  drag = READFLT(pData + TRAJECTORYCONFIG + VDRAGCOEFFICIENT);
 				//return speed * drag;
 
-				float TrajectoryGravityZ = READFLT(pWeapon + TARJECTORYGRAVITYZ); //TrajectoryGravityZ
+				float TrajectoryGravityZ = READFLT(pWeapon + TRAJECTORYGRAVITYZ); //TrajectoryGravityZ
 				float SimulationSubstepTime = READFLT(pData + TRAJECTORYCONFIG + SIMULATIONSUBSTEPTIME); // SimulationSubstepTime
 				float drag = READFLT(pData + TRAJECTORYCONFIG + VDRAGCOEFFICIENT); // VDragCoefficient
 				float BulletSpeed = READFLT(pData + TRAJECTORYCONFIG); // BulletSpeed
@@ -715,3 +706,4 @@ private:
 
 };
 
+#endif // !UTIL_H

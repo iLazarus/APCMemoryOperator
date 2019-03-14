@@ -1,4 +1,8 @@
 #pragma once
+#ifndef GAME_H
+#define GAME_H
+
+
 #include <corecrt_math.h>
 
 
@@ -220,13 +224,10 @@ public:
 struct FMinimalViewInfo
 {
 public:
-
-	float FOV;	
-	char pad1[0x4];
-	Vector3 Location;
-	char pad2[0x20];
+	float FOV;
 	FRotator Rotation;
-	
+	char pad1[0xC];
+	Vector3 Location;	
 };
 
 struct FCameraCacheEntry
@@ -323,3 +324,5 @@ public:
 	int uid;
 	float distance;
 };
+
+#endif // !GAME_H

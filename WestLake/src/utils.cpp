@@ -1,14 +1,13 @@
 #include "utils.h"
+#include "threadpool.h"
 
-#include <xmmintrin.h>
-
-
+std::threadpool playerThread{ 20 };
+std::threadpool actorsThread{ 20 };
 
 utils::utils()
 {
 
 }
-
 
 utils::~utils()
 {
@@ -49,8 +48,6 @@ void utils::RefreshOffset()
 void utils::DebugOffset()
 {
 	
-
-
 	printf("self ---------------------\r\n");
 	for (int i = 0; i < 0x1000; i++)
 	{
@@ -139,10 +136,7 @@ bool SortRule(PlayerData a, PlayerData b)
 	float k = abs(b.screen.y - 540);
 	return ((l * l + m * m) < (j * j + k * k)) && (a.distance < b.distance);
 }
-char READBUF[0x7162000]{0};
 
-
-int actorCount = 0;
 void utils::ActorLoop()
 {
 
@@ -153,7 +147,7 @@ void utils::ActorLoop()
 	//uint64_t uworld2 = 0;
 	//printf("0x%p 0x%p 0x%IX \r\n", &READBUF, base, uworld1);
 	//return;
-	
+
 
 	//////////////////////
 	if (autobot)
@@ -181,7 +175,7 @@ void utils::ActorLoop()
 	if (!actors) return;
 
 	aimList.clear();
-	actorCount = 0;
+	//actorCount = 0;
 	for (int i = 0; i < entitycount; i++)
 	{
 		FCameraCache = READT(FCameraCacheEntry, g_UPlayerCameraManager + CAMERACACHE, sizeof(FCameraCacheEntry));
@@ -191,12 +185,12 @@ void utils::ActorLoop()
 		//printf("%s \r\n", GetGNameById(g_UGname, id).c_str());
 		if (id > 0 && id < CachedNames.size())
 		{
-			
+
 			if (isPlayer(id) || isVehicle(id) || isItems(id) || isLoot(id) || isAircaft(id))
 			{
 				if (esp && isPlayer(id))
 				{
-					actorCount++;
+					//actorCount++;
 					Vector3 localLocation = FCameraCache.POV.Location;
 
 					//for (int i = 0; i < 0x1000; i++)
@@ -211,7 +205,6 @@ void utils::ActorLoop()
 					//			printf("%X\t%s\r\n", i, GetGNameById(g_UGname, id).c_str());
 					//		}
 					//	}
-
 					//}
 
 					//for (int i = 0; i < 0x3000; i++)
@@ -245,7 +238,7 @@ void utils::ActorLoop()
 					}
 
 
-					if (inScreen(actorScreen)) 
+					if (inScreen(actorScreen))
 					{
 						DWORD_PTR mesh = READ64(actor + MESH);
 						bool canVisual = READFLT(mesh + LASTRENDERTIME) == READFLT(g_MeshSelf + LASTRENDERTIME);
@@ -268,7 +261,7 @@ void utils::ActorLoop()
 						}
 
 
-						dx.DrawString(true, actorScreen.x, actorScreen.y - 25, RED, "%IX", actor);
+						//dx.DrawString(true, actorScreen.x, actorScreen.y - 25, RED, "%IX", actor);
 
 						if (health > 0.0f) {
 							if (g_BestAimTarget.actor == actor)
@@ -280,10 +273,10 @@ void utils::ActorLoop()
 								dx.DrawString(true, actorScreen.x, actorScreen.y - 20.0f + (distance / 50) * 1.0f, canVisual ? VISUAL : UNVISUAL, "[%.0f]", distance);
 							}
 
-							if (skeltch)
+							if (skeltch && distance < 250)
 							{
 								DrawSkeleton(mesh, canVisual);
-							}					
+							}
 						}
 						else
 						{
@@ -310,7 +303,7 @@ void utils::ActorLoop()
 						//		float BulletFlyDistancePerTick = SimulationSubstepTime * BulletSpeed;
 						//		float flyDist = 0.0f;
 						//		float tmp = 0.0f;
-	
+
 						//		int tick = 0;
 						//		for (int i = 1; i <= 500; i++)
 						//		{
@@ -328,10 +321,9 @@ void utils::ActorLoop()
 						//	}
 						//}
 						/*---------------------------------------------------------------------------------------------------------*/
-						
+
 					}
 				}
-				
 
 				if (vehicle && isVehicle(id))
 				{
@@ -345,7 +337,7 @@ void utils::ActorLoop()
 						dx.DrawString(true, actorScreen.x, actorScreen.y, getColor(CachedNames[id]), "%s [%0.0f]", CachedNames[id].c_str(), distance);
 					}
 
-					
+
 				}
 
 				if (itemgoods &&  isItems(id))
@@ -425,7 +417,7 @@ void utils::ActorLoop()
 								}
 							}
 						}
-					}			
+					}
 				}
 
 				if (itemgoods &&  isAircaft(id))
@@ -439,15 +431,15 @@ void utils::ActorLoop()
 					if (inScreen(actorScreen))
 					{
 						dx.DrawString(true, actorScreen.x, actorScreen.y, BLUE, "%s [%0.0f]", "ПеЭЖ", distance);
-					}			
+					}
 				}
 			}
 
-		}	
+		}
 	}
 	aimList.sort(SortRule);
 
-	dx.DrawString(true, 10, 300, RED, "%d", actorCount);
+	//dx.DrawString(true, 10, 300, RED, "%d", actorCount);
 
 	if (((GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0 || (GetAsyncKeyState(VK_LSHIFT) & 0x8000) != 0) && g_BestAimTarget.actor != 0)
 	{
@@ -469,10 +461,19 @@ void utils::ActorLoop()
 			g_BestAimTarget = PlayerData{ 0, 0, 0, false, Vector3(0,0,0) , 0.f,0.f,0.f };
 		}
 	}
-	
+
 }
 
-void utils::Esp()
+void utils::EspPlayers(list<uint64_t> players)
+{
+}
+
+void utils::EspItems(list<uint64_t> items)
+{
+
+}
+
+void utils::EspVehicles(list<uint64_t> vehicles)
 {
 
 }

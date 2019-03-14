@@ -1,4 +1,7 @@
 #pragma once
+#ifndef DRIVER_H
+#define DRIVER_H
+
 #include <Windows.h>
 #include <winioctl.h>
 
@@ -161,3 +164,5 @@ inline bool driver::WPM(DWORD_PTR Addr, T value, SIZE_T Size)
 		&Bytes,
 		NULL); 
 }
+
+#endif

@@ -4,11 +4,32 @@
 #include <thread>
 
 boolean bGraphicsReady = false;
-
 utils h;
 
-
 void ReadLoop() {
+	while (true)
+	{
+		if (bGraphicsReady) {
+			dx.Begin();
+			h.ActorLoop();
+			dx.End();
+		}
+	}
+}
+
+void FireNow()
+{
+	while (true)
+	{
+		if (((GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0 || (GetAsyncKeyState(VK_LSHIFT) & 0x8000) != 0))
+		{
+			h.Fire();
+		}
+		Sleep(20);
+	}
+}
+
+void KeyEventLoop() {
 	while (true)
 	{
 		if (GetAsyncKeyState(VK_HOME) & 1)
@@ -35,34 +56,18 @@ void ReadLoop() {
 		{
 			h.DebugOffset();
 		}
-
-		if (bGraphicsReady) {
-			dx.Begin();
-			h.ActorLoop();
-			dx.End();
-		}
-		Sleep(1);
-	}
-}
-
-void FireNow()
-{
-	while (true)
-	{
-		if (((GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0 || (GetAsyncKeyState(VK_LSHIFT) & 0x8000) != 0))
-		{
-			h.Fire();
-		}
-		Sleep(20);
+		Sleep(50);
 	}
 }
 
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLine, int nShowCmd)
 {
+	// console
 	AllocConsole();
 	freopen("CONOUT$", "w", stdout);
 
+	// win32 api create window
 	WNDCLASSEX wcex;
 	wcex.cbClsExtra = 0;
 	wcex.cbSize = sizeof(wcex);
@@ -102,7 +107,6 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	MARGINS Margin = { -1 };
 	DwmExtendFrameIntoClientArea(hWnd, &Margin);
 
-
 	// dx init 
 	if (!(bGraphicsReady = dx.Init(hWnd, 1920, 1080)))
 	{
@@ -114,8 +118,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	{
 		printf("DX Init Sucess!\r\n");
 	}
-	//
 
+	//hack init
 	if (!h.Init())
 	{
 		printf("致命的错误,重开游戏后并重新运行该软件!\r\n");
@@ -123,19 +127,24 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		return -1;
 	}
 
-
+	// hack logic
 	esp = true;
 	itemgoods = true;
 	vehicle = false;
 
+	
+
+	// thread worker
+	thread KeyEvents{ KeyEventLoop };
 	thread ReadActors{ ReadLoop };
-	ReadActors.detach();
-
-
 	thread AimShoot{ FireNow };
+
+	KeyEvents.detach();
+	ReadActors.detach();
 	AimShoot.detach();
 
 
+	// win32 event loop
 	MSG msg{};
 
 	while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -148,6 +157,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 		Sleep(1);
 	}
 
+	// clean logic
 	UnregisterClass(L"Chrome", wcex.hInstance);
 	FreeConsole();
 	return static_cast<int>(msg.wParam);

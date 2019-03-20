@@ -3,7 +3,7 @@
 #include <ntifs.h>
 
 NTKERNELAPI PVOID PsGetProcessSectionBaseAddress(__in PEPROCESS Process);
-NTKERNELAPI UCHAR * PsGetProcessImageFileName(__in PEPROCESS Process);
+NTKERNELAPI PUCHAR PsGetProcessImageFileName(__in PEPROCESS Process);
 
 typedef struct _IOBUFFER
 {

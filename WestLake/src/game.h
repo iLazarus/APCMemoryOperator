@@ -224,10 +224,11 @@ public:
 struct FMinimalViewInfo
 {
 public:
-	float FOV;
+
+	Vector3 Location;
 	FRotator Rotation;
-	char pad1[0xC];
-	Vector3 Location;	
+	char pad1[0x4];
+	float FOV;
 };
 
 struct FCameraCacheEntry

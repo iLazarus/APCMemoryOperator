@@ -55,7 +55,7 @@ bool graphics::Init(HWND hWnd, UINT iWidth, UINT iHeight)
 	Parameters.BackBufferHeight = iHeight;
 	Parameters.MultiSampleType = D3DMULTISAMPLE_NONE;
 	Parameters.SwapEffect = D3DSWAPEFFECT_DISCARD;
-	Parameters.PresentationInterval = D3DPRESENT_INTERVAL_DEFAULT;
+	Parameters.PresentationInterval = D3DPRESENT_INTERVAL_IMMEDIATE;
 	Parameters.hDeviceWindow = hWnd;
 	Parameters.FullScreen_RefreshRateInHz = 0;
 	Direct3D = Direct3DCreate9(D3D_SDK_VERSION);

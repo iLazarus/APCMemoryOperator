@@ -4,6 +4,15 @@
 std::threadpool playerThread{ 20 };
 std::threadpool actorsThread{ 20 };
 
+inline uint64_t decrypt(uint64_t ptr)
+{
+	uint64_t v14;
+	LODWORD(v14) = (ptr + 0x3F95C5AE) ^ 0x7070B090;
+	HIDWORD(v14) = (HIDWORD(ptr) + 0x21F71A80) ^ 0x90709070;
+	return v14;
+}
+
+
 utils::utils()
 {
 
@@ -176,59 +185,34 @@ void utils::ActorLoop()
 
 	aimList.clear();
 	//actorCount = 0;
+
+	uint64_t actorarry [3500];
+	READSIZE(actors, &actorarry, 3500 * sizeof(uint64_t));
+	READSIZE(g_UPlayerCameraManager + CAMERACACHE, &FCameraCache, sizeof(FCameraCacheEntry));
 	for (int i = 0; i < entitycount; i++)
-	{
-		FCameraCache = READT(FCameraCacheEntry, g_UPlayerCameraManager + CAMERACACHE, sizeof(FCameraCacheEntry));
-		uint64_t actor = READ64(actors + (i * 0x8));
+	{		
+		uint64_t actor = actorarry[i];
 		if (!actor || actor == g_USelf) continue;
-		int id = DECID(READINT(actor + AACTORID));
-		//printf("%s \r\n", GetGNameById(g_UGname, id).c_str());
+
+		AActor aa;
+		READSIZE(actor, &aa, sizeof(AActor));
+		int id = DECID(aa.encryptId);
+
 		if (id > 0 && id < CachedNames.size())
 		{
-
 			if (isPlayer(id) || isVehicle(id) || isItems(id) || isLoot(id) || isAircaft(id))
 			{
 				if (esp && isPlayer(id))
 				{
-					//actorCount++;
 					Vector3 localLocation = FCameraCache.POV.Location;
+					uint64_t root = decrypt(aa.encryptRoot);
 
-					//for (int i = 0; i < 0x1000; i++)
-					//{
-					//	uint64_t targ = dpt.de_prop(actor + i);
-					//	if (targ)
-					//	{
-					//		int id = DECID(READINT(targ + AACTORID));
-					//		string r = GetGNameById(g_UGname, id);
-					//		if (r.length() > 1 && r.length() < 30)
-					//		{
-					//			printf("%X\t%s\r\n", i, GetGNameById(g_UGname, id).c_str());
-					//		}
-					//	}
-					//}
-
-					//for (int i = 0; i < 0x3000; i++)
-					//{
-					//	uint64_t targ = dpt.de_prop(actor + i);
-					//	if (targ)
-					//	{
-					//		int id = DECID(READINT(targ + AACTORID));
-					//		string r = GetGNameById(g_UGname, id);
-					//		if (r.length() > 1 && r.length() < 30)
-					//		{
-					//			printf("%X\t%s\r\n", i, GetGNameById(g_UGname, id).c_str());
-					//		}
-					//	}
-					//}
-
-					uint64_t root = dpt.de_prop(actor + ROOTCOMPONET);
 					Vector3 actor_location = READT(Vector3, root + RELATIVELOCATION, sizeof(Vector3));
 					Vector3 actorScreen = WorldToScreen(actor_location, FCameraCache);
 					float distance = (actor_location - localLocation).Length() / 100.0f;
-
-					if (dpt.de_prop(actor + TEAM)) continue;
-					float health = READFLT(actor + HEALTH);
-					float groggyHealth = READFLT(actor + GROGGYHEALTH);
+					if (decrypt(aa.team)) continue;
+					float health = aa.health;
+					float groggyHealth = aa.groggyHealth;
 
 					if (abs(actor_location.x - localLocation.x) < 25001 && abs(actor_location.y - localLocation.y) < 25001 && (health > 0 || groggyHealth > 0))
 					{
@@ -240,7 +224,7 @@ void utils::ActorLoop()
 
 					if (inScreen(actorScreen))
 					{
-						DWORD_PTR mesh = READ64(actor + MESH);
+						DWORD_PTR mesh = aa.mesh;
 						bool canVisual = READFLT(mesh + LASTRENDERTIME) == READFLT(g_MeshSelf + LASTRENDERTIME);
 						int headId = 15;
 						Vector3 headLocation = GetBoneWithRotation(mesh, headId);
@@ -285,50 +269,13 @@ void utils::ActorLoop()
 							}
 						}
 
-						/*---------------------------------------------------------------------------------------------------------*/
-						//DWORD_PTR WeaponProcessor = READ64(actor + WEAPONPROCESSOR);
-						//DWORD_PTR EquippedWeapons = READ64(WeaponProcessor + EQUIPPEDWEAPONS);
-						//BYTE CurrentWeaponIndex = READBYTE(WeaponProcessor + EQUIPPEDWEAPONS + 0x20 + 0x1);
-						//if (CurrentWeaponIndex >= 0 && CurrentWeaponIndex < 3)
-						//{
-						//	DWORD_PTR pWeapon = READ64(EquippedWeapons + CurrentWeaponIndex * 8);
-						//	if (pWeapon)
-						//	{
-						//		DWORD_PTR pData = READ64(pWeapon + WEAPONTRAJECTORYDATA); // WEAPONTRAJECTORYDATA
-						//		
-						//		float TrajectoryGravityZ = READFLT(pWeapon + TARJECTORYGRAVITYZ); //TrajectoryGravityZ
-						//		float SimulationSubstepTime = READFLT(pData + TRAJECTORYCONFIG + SIMULATIONSUBSTEPTIME); // SimulationSubstepTime
-						//		float VDragCoefficient = READFLT(pData + TRAJECTORYCONFIG + 0x20); // VDragCoefficient
-						//		float BulletSpeed = READFLT(pData + TRAJECTORYCONFIG);             // BulletSpeed
-						//		float BulletFlyDistancePerTick = SimulationSubstepTime * BulletSpeed;
-						//		float flyDist = 0.0f;
-						//		float tmp = 0.0f;
-
-						//		int tick = 0;
-						//		for (int i = 1; i <= 500; i++)
-						//		{
-
-						//			flyDist = BulletFlyDistancePerTick * (tick = i);
-
-						//			tmp = TrajectoryGravityZ * SimulationSubstepTime * 100.0f * VDragCoefficient  * (i - 1) * SimulationSubstepTime;
-
-						//			if (flyDist > distance) break;
-						//		}
-						//		flyDist -= BulletFlyDistancePerTick;
-
-						//		dx.DrawString(true, actorScreen.x, actorScreen.y + 10, RED, "%f %d %f %f %f %f", flyDist, tick, tmp, TrajectoryGravityZ, SimulationSubstepTime, VDragCoefficient);
-
-						//	}
-						//}
-						/*---------------------------------------------------------------------------------------------------------*/
-
 					}
 				}
 
 				if (vehicle && isVehicle(id))
 				{
 					Vector3 localLocation = FCameraCache.POV.Location;
-					uint64_t root = dpt.de_prop(actor + ROOTCOMPONET);
+					uint64_t root = decrypt(aa.encryptRoot);
 					Vector3 actor_location = READT(Vector3, root + RELATIVELOCATION, sizeof(Vector3));
 					Vector3 actorScreen = WorldToScreen(actor_location, FCameraCache);
 					float distance = (actor_location - localLocation).Length() / 100.0f;
@@ -336,8 +283,6 @@ void utils::ActorLoop()
 					{
 						dx.DrawString(true, actorScreen.x, actorScreen.y, getColor(CachedNames[id]), "%s [%0.0f]", CachedNames[id].c_str(), distance);
 					}
-
-
 				}
 
 				if (itemgoods &&  isItems(id))
@@ -362,22 +307,24 @@ void utils::ActorLoop()
 					}
 
 					Vector3 localLocation = FCameraCache.POV.Location;
-					uint64_t root = dpt.de_prop(actor + ROOTCOMPONET);
+					uint64_t root = decrypt(aa.encryptRoot);
 					Vector3 actor_location = READT(Vector3, root + RELATIVELOCATION, sizeof(Vector3));
 
-					uint64_t DroppedItemGroupArray = READ64(actor + DROPPEDITEMARRAY);
-					int count = READINT(actor + DROPPEDITEMARRAY + 0x8);
-					if (!count) continue;
+					int count = aa.droppedItemCount;
+					if (count < 1) continue;
 					int z = 0;
+
+					DroppedItem di[64];
+					READSIZE(aa.droppedItemPtr, &di, 0x10 * count);
+
 					for (int j = 0; j < count; j++)
 					{
-						uint64_t DroppedItemGroup = READ64(DroppedItemGroupArray + j * 0x10);
-						uint64_t UItem = READ64(DroppedItemGroup + UITEM);
+						uint64_t UItem = READ64(di[j].group + UITEM);
 						int uid = DECID(READINT(UItem + AACTORID));
 
 						if (uid < CachedNames.size() && strlen(CachedNames[uid].c_str()) < 7)
 						{
-							Vector3 goods_location = READT(Vector3, DroppedItemGroup + RELATIVELOCATION, sizeof(Vector3));
+							Vector3 goods_location = READT(Vector3, di[j].group + RELATIVELOCATION, sizeof(Vector3));
 							Vector3 goods_screen = WorldToScreen(goods_location, FCameraCache);
 							float d = (goods_location - localLocation).Length() / 100.0f;
 							if (inScreen(goods_screen))
@@ -393,7 +340,8 @@ void utils::ActorLoop()
 				if (itemgoods &&  isLoot(id))
 				{
 					Vector3 localLocation = FCameraCache.POV.Location;
-					uint64_t root = dpt.de_prop(actor + ROOTCOMPONET);
+					uint64_t root = decrypt(aa.encryptRoot);
+					//uint64_t root = dpt.de_prop(actor + ROOTCOMPONET);
 					Vector3 actor_location = READT(Vector3, root + RELATIVELOCATION, sizeof(Vector3));
 					Vector3 actorScreen = WorldToScreen(actor_location, FCameraCache);
 					float distance = (actor_location - localLocation).Length() / 100.0f;
@@ -402,13 +350,14 @@ void utils::ActorLoop()
 					{
 						if (distance < 250.0f)
 						{
-							DWORD_PTR Items = READ64(actor + ITEMPACKAGE);
-							int Count = READINT(actor + ITEMPACKAGE + 0x8);
+							DWORD_PTR Items = aa.itemPackagePtr;
+							int Count = aa.itemPackageCount;
 							if (Count < 1 || Count > 64) continue;
+							uint64_t itemarray[64];
+							READSIZE(Items, &itemarray, 8 * Count);
 							for (int j = 0; j < Count; j++)
 							{
-								DWORD_PTR Item = READ64(Items + j * 0x8);
-								int uid = DECID(READINT(Item + AACTORID));
+								int uid = DECID(READINT(itemarray[j] + AACTORID));
 								if (uid < CachedNames.size() && strlen(CachedNames[uid].c_str()) < 7)
 								{
 									actorScreen.y += 14;
@@ -423,7 +372,7 @@ void utils::ActorLoop()
 				if (itemgoods &&  isAircaft(id))
 				{
 					Vector3 localLocation = FCameraCache.POV.Location;
-					uint64_t root = dpt.de_prop(actor + ROOTCOMPONET);
+					uint64_t root = decrypt(aa.encryptRoot);
 					Vector3 actor_location = READT(Vector3, root + RELATIVELOCATION, sizeof(Vector3));
 					Vector3 actorScreen = WorldToScreen(actor_location, FCameraCache);
 					float distance = (actor_location - localLocation).Length() / 100.0f;

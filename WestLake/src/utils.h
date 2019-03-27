@@ -529,6 +529,14 @@ private:
 			{
 			name = "VZ61";
 			}
+			else if (name == "Item_Attach_Weapon_SideRail_DotSight_RMR_C")
+			{
+			name = "侧瞄";
+			}
+			else if (name == "Item_Weapon_FlareGun_C")
+			{
+			name = "信号枪";
+			}
 			CachedNames.push_back(name);
 			if (LOGCACHE)
 			{
@@ -541,14 +549,14 @@ private:
 
 	D3DCOLOR getColor(string name)
 	{
-		if (name == "汤姆逊" || name == "UZI" || name == "UMP9" || name == "雷蛇" || name == "AKM" || name == "M16" || name == "二头" || name == "QBU" || name == "M762"
-			|| name == "二甲" || name == "二包" || name == "7.62" || name == "止疼" || name == "饮料" || name == "大药"
+		if (name == "汤姆逊" || name == "UZI" || name == "UMP9" || name == "雷蛇" || name == "AKM" || name == "M16" || name == "M762"
+			|| name == "7.62" || name == "止疼" || name == "饮料" || name == "大药"
 			|| name == "红点" || name == "全息" || name == "2X镜" || name == "3X镜" || name == "三角" || name == "拇指" || name == "轻型")
 		{
 			return LIGHTBLUE;
 		}
-		else if (name == "三包" || name == "M4" || name == "M249" || name == "QBZ"
-			|| name == "98K" || name == "SCARL" || name == "Mini" || name == "SKS" || name == "SLR" || name == "AUG"
+		else if (name == "三包" || name == "M4" || name == "M249" || name == "QBZ" || name == "QBU" || name == "二包" || name == "二甲" || name == "二头"
+			 || name == "SCARL" || name == "Mini" || name == "SKS" || name == "SLR" || name == "AUG"
 			|| name == "Goza" || name == "吉利服" || name == "医疗箱" || name == "MK14" || name == "AWM" || name == "马格南"
 			|| name == "肾上腺" || name == "MK47" || name == "VSS"
 			|| name == "4X镜" || name == "6X镜" || name == "15X镜" || name == "手雷" || name == "狙口" || name == "枪托" || name == "半截" || name == "托腮" || name == "VZ61" || name == "G36")
@@ -563,7 +571,7 @@ private:
 		{
 			return BLUE;
 		}
-		else if (name == "三头" || name == "三甲" || name == "步消" || name == "步快" || name == "狙消" || name == "M24" || name == "8X镜")
+		else if (name == "三头" || name == "三甲" || name == "步消" || name == "步快" || name == "狙消" || name == "M24" || name == "8X镜" || name=="侧瞄" || name == "信号枪" || name == "98K")
 		{
 			return RED;
 		}

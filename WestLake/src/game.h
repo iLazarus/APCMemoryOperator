@@ -326,4 +326,40 @@ public:
 	float distance;
 };
 
+
+struct DroppedItem {
+	__int64 group;
+	__int64 UNKNOWN;
+};
+
+
+struct ItemPackage {
+	__int64 chunk;
+	__int32 encryptId; //0x0008 
+};
+
+
+
+struct AActor {
+	__int64 pad;		
+	__int32 encryptId; //0x0008 
+	char pad0[556];
+	__int64 droppedItemPtr; //0x0238 
+	__int32 droppedItemCount; //0x0240
+	char pad1[268];
+	__int64 encryptRoot; //0x0350 
+	char pad2[408]; 
+	__int64 mesh; //0x04F0 
+	char pad6[24];
+	__int64 itemPackagePtr; //0x510
+	__int32 itemPackageCount; // 0x518
+	char pad3[1876];
+	__int64 team; //0x0C70 
+	char pad4[48]; 
+	float groggyHealth; //0x0CA8 
+	char pad5[2020]; 
+	float health; //0x1490 
+};
+
+
 #endif // !GAME_H

@@ -4,12 +4,12 @@
 std::threadpool playerThread{ 20 };
 std::threadpool actorsThread{ 20 };
 
-inline uint64_t decrypt(uint64_t ptr)
+inline uint64_t decryptFunction(uint64_t ptr)
 {
-	uint64_t v14;
-	LODWORD(v14) = (ptr + 0x3F95C5AE) ^ 0x7070B090;
-	HIDWORD(v14) = (HIDWORD(ptr) + 0x21F71A80) ^ 0x90709070;
-	return v14;
+	uint64_t v15;
+	LODWORD(v15) = (~(LODWORD(ptr) ^ 0xB8CCFC42) + 0x62229AFE) ^ 0x80119943;
+	HIDWORD(v15) = (~(HIDWORD(ptr) ^ 0x539D3917) + 0x613D61BE) ^ 0xD9A058AA;
+	return v15;
 }
 
 
@@ -89,31 +89,37 @@ void utils::DebugOffset()
 
 	printf("f r l --------------------\r\n");
 
+	printf("f r l --------------------\r\n");
+
 	for (int i = 0; i < 0x2000; i++)
 	{
 		uint64_t targ = g_UPlayerCameraManager + i + 0x0;
-		if (READFLT(targ) == -9204.73047f)
+
+		if (READFLT(targ) == -8538.408203f)
 		{
-			if (READFLT((targ + 0x4)) == 3348.46704f)
+			if (READFLT((targ + 0x4)) == 5106.546387f)
 			{
-				if (READFLT((targ + 0x8)) == 6156.79785f)
+				if (READFLT((targ + 0x8)) == 6337.366211f)
 				{
 					printf("%X\t%s\r\n", i, "Location");
 				}
 			}
 		}
 
-		if (READFLT(targ) == 90.00000f)
+		if (READFLT(targ) == 60.00000f)
 		{
 			printf("%X\t%s\r\n", i, "Fov");
 		}
 
 
-		if (READFLT(targ) == 3.97983479f)
+		if (READFLT(targ) == -21.43337822f)
 		{
-			if (READFLT((targ + 0x4)) == 0.800000012f)
+			if (READFLT((targ + 0x4)) == -41.44004059f)
 			{
-				printf("%X\t%s\r\n", i, "Roator");
+				if (READFLT((targ + 0x8)) == 9.421803474f)
+				{
+					printf("%X\t%s\r\n", i, "Roator");
+				}
 			}
 		}
 	}
@@ -205,12 +211,12 @@ void utils::ActorLoop()
 				if (esp && isPlayer(id))
 				{
 					Vector3 localLocation = FCameraCache.POV.Location;
-					uint64_t root = decrypt(aa.encryptRoot);
+					uint64_t root = decryptFunction(aa.encryptRoot);
 
 					Vector3 actor_location = READT(Vector3, root + RELATIVELOCATION, sizeof(Vector3));
 					Vector3 actorScreen = WorldToScreen(actor_location, FCameraCache);
 					float distance = (actor_location - localLocation).Length() / 100.0f;
-					if (decrypt(aa.team)) continue;
+					if (decryptFunction(aa.team)) continue;
 					float health = aa.health;
 					float groggyHealth = aa.groggyHealth;
 
@@ -275,7 +281,7 @@ void utils::ActorLoop()
 				if (vehicle && isVehicle(id))
 				{
 					Vector3 localLocation = FCameraCache.POV.Location;
-					uint64_t root = decrypt(aa.encryptRoot);
+					uint64_t root = decryptFunction(aa.encryptRoot);
 					Vector3 actor_location = READT(Vector3, root + RELATIVELOCATION, sizeof(Vector3));
 					Vector3 actorScreen = WorldToScreen(actor_location, FCameraCache);
 					float distance = (actor_location - localLocation).Length() / 100.0f;
@@ -307,7 +313,7 @@ void utils::ActorLoop()
 					}
 
 					Vector3 localLocation = FCameraCache.POV.Location;
-					uint64_t root = decrypt(aa.encryptRoot);
+					uint64_t root = decryptFunction(aa.encryptRoot);
 					Vector3 actor_location = READT(Vector3, root + RELATIVELOCATION, sizeof(Vector3));
 
 					int count = aa.droppedItemCount;
@@ -340,7 +346,7 @@ void utils::ActorLoop()
 				if (itemgoods &&  isLoot(id))
 				{
 					Vector3 localLocation = FCameraCache.POV.Location;
-					uint64_t root = decrypt(aa.encryptRoot);
+					uint64_t root = decryptFunction(aa.encryptRoot);
 					//uint64_t root = dpt.de_prop(actor + ROOTCOMPONET);
 					Vector3 actor_location = READT(Vector3, root + RELATIVELOCATION, sizeof(Vector3));
 					Vector3 actorScreen = WorldToScreen(actor_location, FCameraCache);
@@ -372,13 +378,31 @@ void utils::ActorLoop()
 				if (itemgoods &&  isAircaft(id))
 				{
 					Vector3 localLocation = FCameraCache.POV.Location;
-					uint64_t root = decrypt(aa.encryptRoot);
+					uint64_t root = decryptFunction(aa.encryptRoot);
 					Vector3 actor_location = READT(Vector3, root + RELATIVELOCATION, sizeof(Vector3));
 					Vector3 actorScreen = WorldToScreen(actor_location, FCameraCache);
 					float distance = (actor_location - localLocation).Length() / 100.0f;
 
 					if (inScreen(actorScreen))
 					{
+
+						DWORD_PTR Items = aa.itemPackagePtr;
+						int Count = aa.itemPackageCount;
+						if (Count < 1 || Count > 64) continue;
+						uint64_t itemarray[64];
+						READSIZE(Items, &itemarray, 8 * Count);
+						for (int j = 0; j < Count; j++)
+						{
+							int uid = DECID(READINT(itemarray[j] + AACTORID));
+							if (uid < CachedNames.size() && strlen(CachedNames[uid].c_str()) < 7)
+							{
+								actorScreen.y += 14;
+
+								dx.DrawString(true, actorScreen.x, actorScreen.y, getColor(CachedNames[uid]), "%s [%0.0f]", CachedNames[uid].c_str(), distance);
+							}
+						}
+
+
 						dx.DrawString(true, actorScreen.x, actorScreen.y, BLUE, "%s [%0.0f]", "ПеЭЖ", distance);
 					}
 				}

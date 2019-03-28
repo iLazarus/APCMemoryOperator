@@ -21,22 +21,8 @@ uint64_t decrypt::de_world(uint64_t world)
 {
 	uint64_t uworld = 0;
 	uint64_t rcx = READ64(GAMEBASE + world);
-
-	uint32_t eax = rcx;
-	eax = eax ^ 0x88A2FC42;
-	eax = ~eax;
-	eax = eax - 0x6DADF532;
-	eax = eax ^ 0x800F0973;
-
-
-	uint32_t ecx = HIDWORD(rcx);
-	ecx = ecx ^ 0x23733917;
-	ecx = ~ecx;
-	ecx = ecx - 0x6EF26E72;
-	ecx = ecx ^ 0x197EA89A;
-
-	LODWORD(uworld) = eax;
-	HIDWORD(uworld) = ecx;
+	LODWORD(uworld) = __ROR4__((__ROR4__(LODWORD(rcx) ^ 0x0E93303BD, 16) - 0x7BFB0BC4) ^ 0x843303BD, 16) ^ 0x8404F43C;
+	HIDWORD(uworld) = __ROR4__((__ROR4__(HIDWORD(rcx) ^ 0x4E62C6E8, 8) - 0x7C447C44) ^ 0xE962C6E8, 8) ^ 0x7C447C44;
 	return uworld;
 }
 
@@ -44,67 +30,56 @@ uint64_t decrypt::de_level(uint64_t level)
 {
 	uint64_t v7 = READ64(g_UWorld + level);
 	uint64_t v15;
-	LODWORD(v15) = (v7 - 0x5919B186) ^ 0xA6E64E7A;
-	HIDWORD(v15) = (HIDWORD(v7) - 0x5AC65A46) ^ 0x5AC65A46;
+	LODWORD(v15) = (~(LODWORD(v7) ^ 0xB8CCFC42) + 0x62229AFE) ^ 0x80119943;
+	HIDWORD(v15) = (~(HIDWORD(v7) ^ 0x539D3917) + 0x613D61BE) ^ 0xD9A058AA;
 	return v15;
 }
 
 uint64_t decrypt::de_actor(uint64_t actor)
 {
 	uint64_t v6 = READ64(g_ULevel + actor);
-	uint64_t v25 = 0;
-	uint64_t v7 = HIDWORD(v6);
-	uint64_t v8 = HIWORD(HIDWORD(v6));
-	LODWORD(v6) = (((unsigned int)v6 >> 16 << 16) | (unsigned __int16)(WORD1(v6) ^ v6)) + 0x2E6EB672;
-	LODWORD(v25) = ((unsigned __int16)(v6 ^ WORD1(v6)) | ((unsigned __int16)__ROR2__(WORD1(v6), 8) << 16)) ^ 0x2E6EB672;
-	HIDWORD(v25) = ((((unsigned __int16)__ROR2__(v8 ^ v7, 8) | ((unsigned __int16)__ROR2__(v8, 8) << 16)) + 0x2D312DB2) & 0xFFFF0000 | (unsigned __int16)__ROR2__((__ROR2__(v8 ^ v7, 8) + 0x2DB2) ^ ((((unsigned __int16)__ROR2__(v8 ^ v7, 8) | ((unsigned int)(unsigned __int16)__ROR2__(v8, 8) << 16)) + 0x2D312DB2) >> 16), 8)) ^ 0xD2CED24E;
-	return v25;
+	uint64_t v19;
+	LODWORD(v19) = (LODWORD(v6) - 0x1AE496EB) ^ 0x55B5619B;
+	HIDWORD(v19) = (HIDWORD(v6) + 0x2E80624B) ^ 0x2B452B85;
+	return v19;
 }
 
 uint64_t decrypt::de_inst(uint64_t inst)
 {
 	uint64_t v1 = READ64(g_UWorld + inst);
 	uint64_t v3;
-	LODWORD(v3) = (v1 + 0x2666CEFA) ^ 0x2666CEFA;
-	HIDWORD(v3) = (HIDWORD(v1) + 0x25B9253A) ^ 0xDA46DAC6;
+	LODWORD(v3) = __ROR4__(__ROL4__(LODWORD(v1) + 0x43618A8F, 8) - 0x3E8F2190, 16) ^ 0xEF0F53E1;
+	HIDWORD(v3) = __ROR4__(__ROR4__(HIDWORD(v1) - 0x4BFD2A88, 16) - 0x4EBCBC07, 8) ^ 0x91BF917F;
 	return v3;
 }
 
 uint64_t decrypt::de_local(uint64_t local)
 {
-	uint64_t a1 = READ64(READ64(g_GameInstance + local));
-
-
-	__int64 v15;
-	__int64 v24 = a1;
-	__int64 v25 = a1 >> 32;
-	LODWORD(v15) = ((unsigned __int16)(((v24 ^ WORD1(v24)) + 14568) ^ ((unsigned __int64)((v24 & 0xFFFF0000 | (unsigned __int16)(v24 ^ WORD1(v24)))
-		- 1734854424) >> 16)) | ((v24 & 0xFFFF0000 | (unsigned __int16)(v24 ^ WORD1(v24))) - 1734854424) & 0xFFFF0000) ^ 0x989838E8;
-	HIDWORD(v15) = ((unsigned __int16)__ROL2__(
-		(__ROL2__(WORD1(v25) ^ v25, 8) - 26648) ^ (((((unsigned __int16)__ROR2__(WORD1(v25), 8) << 16) | (unsigned int)(unsigned __int16)__ROL2__(WORD1(v25) ^ v25, 8))
-			- 1746429976) >> 16),
-		8) | ((unsigned __int16)__ROR2__(
-		((((unsigned __int16)__ROR2__(WORD1(v25), 8) << 16) | (unsigned int)(unsigned __int16)__ROL2__(WORD1(v25) ^ v25, 8))
-			- 1746429976) >> 16,
-			8) << 16)) ^ 0x68186818;
-	return v15;
+	uint64_t v4 = READ64(READ64(g_GameInstance + local));
+	uint32_t v6 = ((v4 ^ 0xE74373EB) + 0x4A0AE296) ^ 0xD049917D;
+	uint32_t v7 = (((v4 >> 32) ^ 0x34C2A658) + 0x49D54956) ^ 0x51E810F2;
+	return __PAIR__(v7, v6);
 }
 
 uint64_t decrypt::de_controller(uint64_t controller)
 {
-	uint64_t v17 = READ64(g_ULocalPlayer + controller);
-	uint64_t v13;
-	LODWORD(v13) = __ROL4__(__ROL4__(v17, 16) - 1945314124, 16) ^ 0x8C0CDCB4;
-	HIDWORD(v13) = __ROR4__(__ROR4__(HIDWORD(v17), 8) - 1959556300, 8) ^ 0x74CC74CC;
-	return v13;
+	uint64_t v12 = READ64(g_ULocalPlayer + controller);
+	uint64_t v20;
+	uint64_t v13 = v12 >> 32;
+	uint64_t v14 = (v12 & 0xFFFF0000 | (unsigned __int16)__ROR2__(v12 ^ WORD1(v12), 8)) + 1048479330;
+	LODWORD(v20) = ((unsigned __int16)__ROR2__(v14 ^ HIWORD(v14), 8) | ((unsigned __int16)__ROR2__(HIWORD(v14), 8) << 16)) ^ 0x3E7E8662;
+	HIDWORD(v20) = ((((unsigned __int16)v13 ^ ((unsigned int)v13 >> 16) | ((unsigned __int16)__ROR2__(WORD1(v13), 8) << 16))
+		+ 1025588642) & 0xFFFF0000 | (unsigned __int16)((v13 ^ WORD1(v13)) + 15778) ^ ((((unsigned __int16)v13 ^ ((unsigned int)v13 >> 16) | ((unsigned __int16)__ROR2__(WORD1(v13), 8) << 16))
+			+ 1025588642) >> 16)) ^ 0xC2DEC25E;
+	return v20;
 }
 
 uint64_t decrypt::de_prop(uint64_t prop)
 {
 	uint64_t v7 = READ64(prop);
-	uint64_t v14;
-	LODWORD(v14) = (v7 + 0x3F95C5AE) ^ 0x7070B090;
-	HIDWORD(v14) = (HIDWORD(v7) + 0x21F71A80) ^ 0x90709070;
-	return v14;
+	uint64_t v15;
+	LODWORD(v15) = (~(LODWORD(v7) ^ 0xB8CCFC42) + 0x62229AFE) ^ 0x80119943;
+	HIDWORD(v15) = (~(HIDWORD(v7) ^ 0x539D3917) + 0x613D61BE) ^ 0xD9A058AA;
+	return v15;
 }
 

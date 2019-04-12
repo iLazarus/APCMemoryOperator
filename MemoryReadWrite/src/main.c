@@ -62,7 +62,7 @@ NTSTATUS DispatchIOCTL(PDEVICE_OBJECT pObj, PIRP pIrp)
 	ULONG uOutSize;
 	pIrpStack = IoGetCurrentIrpStackLocation(pIrp);
 	uIoControlCode = pIrpStack->Parameters.DeviceIoControl.IoControlCode;
-	pIoBuffer = (PIOBUFFER)pIrp->AssociatedIrp.SystemBuffer;
+	pIoBuffer = pIrp->AssociatedIrp.SystemBuffer;
 	uInSize = pIrpStack->Parameters.DeviceIoControl.InputBufferLength;
 	uOutSize = pIrpStack->Parameters.DeviceIoControl.OutputBufferLength;
 

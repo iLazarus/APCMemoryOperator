@@ -102,7 +102,7 @@ private:
 
 	inline bool inScreen(Vector3 v)
 	{
-		if (v.x > 0 && v.x < 1920 && v.y >0 && v.y < 1080) return true;
+		if (v.x > 0 && v.x < SCREENX && v.y >0 && v.y < SCREENY) return true;
 		return false;
 	}
 
@@ -601,8 +601,8 @@ private:
 			vTransformed.z = 1.f;
 
 		float FovAngle = POV.FOV;
-		float ScreenCenterX = 1920 / 2.0f;
-		float ScreenCenterY = 1080 / 2.0f;
+		float ScreenCenterX = SCREENX / 2.0f;
+		float ScreenCenterY = SCREENY / 2.0f;
 
 		Screenlocation.x = ScreenCenterX + vTransformed.x * (ScreenCenterX / tanf(FovAngle * (float)M_PI / 360.f)) / vTransformed.z;
 		Screenlocation.y = ScreenCenterY - vTransformed.y * (ScreenCenterX / tanf(FovAngle * (float)M_PI / 360.f)) / vTransformed.z;

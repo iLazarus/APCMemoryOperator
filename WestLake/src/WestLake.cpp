@@ -85,7 +85,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 
 	if (!RegisterClassEx(&wcex)) return -1;
 
-	RECT rect = { 0, 0, 1920, 1080 };
+	RECT rect = { 0, 0, SCREENX, SCREENY };
 	HWND  hWnd = CreateWindowEx(
 		WS_EX_LAYERED | WS_EX_TOPMOST,
 		L"Chrome",
@@ -108,7 +108,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
 	DwmExtendFrameIntoClientArea(hWnd, &Margin);
 
 	// dx init 
-	if (!(bGraphicsReady = dx.Init(hWnd, 1920, 1080)))
+	if (!(bGraphicsReady = dx.Init(hWnd, SCREENX, SCREENY)))
 	{
 		printf("DX Init Failed!\r\n");
 		system("pause");

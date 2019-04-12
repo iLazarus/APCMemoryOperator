@@ -7,8 +7,8 @@ std::threadpool actorsThread{ 20 };
 inline uint64_t decryptFunction(uint64_t ptr)
 {
 	uint64_t v15;
-	LODWORD(v15) = (~(LODWORD(ptr) ^ 0xB8CCFC42) + 0x62229AFE) ^ 0x80119943;
-	HIDWORD(v15) = (~(HIDWORD(ptr) ^ 0x539D3917) + 0x613D61BE) ^ 0xD9A058AA;
+	LODWORD(v15) = (~(~(~(LODWORD(ptr)) + 0x79B38A8F) - 0x6202762D) + 0x8B38A8F) ^ 0x6202762C;
+	HIDWORD(v15) = (~(~(~HIDWORD(ptr) - 0x15AB2A88) + 0x1CF21CB3) + 0x7954D578) ^ 0x1CF21CB2;
 	return v15;
 }
 
@@ -64,10 +64,11 @@ void utils::DebugOffset()
 		if (targ)
 		{
 			int id = DECID(READINT(targ + AACTORID));
+			if (id > 224000) continue;
 			string r = GetGNameById(g_UGname, id);
 			if (r.length() > 1 && r.length() < 30)
 			{
-				printf("%X\t%s\r\n", i, GetGNameById(g_UGname, id).c_str());
+				printf("%X\t%s\r\n", i, r.c_str());
 			}
 		}
 	}
@@ -79,10 +80,11 @@ void utils::DebugOffset()
 		if (targ)
 		{
 			int id = DECID(READINT(targ + AACTORID));
+			if (id > 224000) continue;
 			string r = GetGNameById(g_UGname, id);
 			if (r.length() > 1 && r.length() < 30)
 			{
-				printf("%X\t%s\r\n", i, GetGNameById(g_UGname, id).c_str());
+				printf("%X\t%s\r\n", i, r.c_str());
 			}
 		}
 	}
@@ -132,10 +134,11 @@ void utils::DebugOffset()
 		if (targ)
 		{
 			int id = DECID(READINT(targ + AACTORID));
+			if (id > 224000) continue;
 			string r = GetGNameById(g_UGname, id);
 			if (r.length() > 1 && r.length() < 30)
 			{
-				printf("%X\t%s\r\n", i, GetGNameById(g_UGname, id).c_str());
+				printf("%X\t%s\r\n", i, r.c_str());
 			}
 		}
 	}
@@ -145,10 +148,10 @@ void utils::DebugOffset()
 
 bool SortRule(PlayerData a, PlayerData b)
 {
-	float l = abs(a.screen.x - 960);
-	float m = abs(a.screen.y - 540);
-	float j = abs(b.screen.x - 960);
-	float k = abs(b.screen.y - 540);
+	float l = abs(a.screen.x - (SCREENX / 2));
+	float m = abs(a.screen.y - (SCREENY / 2));
+	float j = abs(b.screen.x - (SCREENX / 2));
+	float k = abs(b.screen.y - (SCREENY / 2));
 	return ((l * l + m * m) < (j * j + k * k)) && (a.distance < b.distance);
 }
 
@@ -167,8 +170,9 @@ void utils::ActorLoop()
 	//////////////////////
 	if (autobot)
 	{
-		dx.DrawLine(950, 540, 970, 540, GREEN);
-		dx.DrawLine(960, 530, 960, 550, GREEN);
+		//dx.DrawString(true, SCREENX / 2, SCREENY / 2, GREEN, "กั");
+		dx.DrawLine(SCREENX / 2 - 10, SCREENY / 2, SCREENX / 2 + 10, SCREENY / 2, GREEN);
+		dx.DrawLine(SCREENX / 2, SCREENY / 2 - 10, SCREENX / 2, SCREENY / 2 + 10, GREEN);
 	}
 
 	if (itemgoods)
@@ -222,8 +226,8 @@ void utils::ActorLoop()
 
 					if (abs(actor_location.x - localLocation.x) < 25001 && abs(actor_location.y - localLocation.y) < 25001 && (health > 0 || groggyHealth > 0))
 					{
-						int radarx = (actor_location.x - localLocation.x) / 10000 * 64 + (1920 - 167);
-						int radary = (actor_location.y - localLocation.y) / 10000 * 64 + (1080 - 160);
+						int radarx = (actor_location.x - localLocation.x) / 10000 * 64 + (SCREENX - 167);
+						int radary = (actor_location.y - localLocation.y) / 10000 * 64 + (SCREENY - 160);
 						dx.DrawString(true, radarx, radary, RED, "กั");
 					}
 
@@ -236,7 +240,7 @@ void utils::ActorLoop()
 						Vector3 headLocation = GetBoneWithRotation(mesh, headId);
 						actorScreen = WorldToScreen(headLocation, FCameraCache);
 
-						if (autobot && health > 0.0f && canVisual && distance < 800 && abs(actorScreen.x - 960) < AIMBOTCIRCLESIZE && abs(actorScreen.y - 540) < AIMBOTCIRCLESIZE)
+						if (autobot && health > 0.0f && canVisual && distance < 800 && abs(actorScreen.x - (SCREENX / 2)) < AIMBOTCIRCLESIZE && abs(actorScreen.y - (SCREENY / 2)) < AIMBOTCIRCLESIZE)
 						{
 							PlayerData _pdata;
 							_pdata.actor = actor;
@@ -507,8 +511,8 @@ void utils::Fire()
 	FCameraCache.POV.Rotation = ControlRotation_CP;
 	Vector3 aimScreen = WorldToScreen(PredictedPos, FCameraCache);
 
-	int x = (int)(aimScreen.x - 960);
-	int y = (int)(aimScreen.y - 540);
+	int x = (int)(aimScreen.x - (SCREENX / 2));
+	int y = (int)(aimScreen.y - (SCREENY / 2));
 	if (abs(x) < AIMBOTCIRCLESIZE * 3  && abs(y) < AIMBOTCIRCLESIZE * 3)
 	{
 		mouse_event(MOUSEEVENTF_MOVE, x, y, 0, 0);

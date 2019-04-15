@@ -62,8 +62,8 @@ uint16_t __ROR2__(uint16_t x, unsigned int count);
 
 
 
-#define SCREENX 1440
-#define SCREENY	900
+#define SCREENX 1920
+#define SCREENY	1080
 
 
 // E8 ? ? ? ? 48 8B 8B ? ? ? ? 48 85 C0 74 0D 

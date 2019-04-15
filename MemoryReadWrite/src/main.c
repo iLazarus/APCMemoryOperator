@@ -2,6 +2,7 @@
 
 VOID NotifyImageLoadCallback(PUNICODE_STRING FullImageName, HANDLE ProcessId, PIMAGE_INFO ImageInfo)
 {
+	UNREFERENCED_PARAMETER(ImageInfo);
 	if (wcsstr(FullImageName->Buffer, TARGET_IMAGENAME))
 	{
 		NTSTATUS status = STATUS_SUCCESS;
@@ -37,6 +38,7 @@ VOID DriverUnload(PDRIVER_OBJECT pObj)
 
 NTSTATUS DispatchCreate(PDEVICE_OBJECT pObj, PIRP pIrp)
 {
+	UNREFERENCED_PARAMETER(pObj);
 	pIrp->IoStatus.Status = STATUS_SUCCESS;
 	pIrp->IoStatus.Information = 0;
 	IoCompleteRequest(pIrp, IO_NO_INCREMENT);
@@ -46,6 +48,7 @@ NTSTATUS DispatchCreate(PDEVICE_OBJECT pObj, PIRP pIrp)
 
 NTSTATUS DispatchClose(PDEVICE_OBJECT pObj, PIRP pIrp)
 {
+	UNREFERENCED_PARAMETER(pObj);
 	pIrp->IoStatus.Status = STATUS_SUCCESS;
 	pIrp->IoStatus.Information = 0;
 	IoCompleteRequest(pIrp, IO_NO_INCREMENT);
@@ -54,6 +57,7 @@ NTSTATUS DispatchClose(PDEVICE_OBJECT pObj, PIRP pIrp)
 
 NTSTATUS DispatchIOCTL(PDEVICE_OBJECT pObj, PIRP pIrp)
 {
+	UNREFERENCED_PARAMETER(pObj);
 	NTSTATUS status = STATUS_INVALID_DEVICE_REQUEST;
 	PIO_STACK_LOCATION pIrpStack;
 	ULONG uIoControlCode;
@@ -217,6 +221,7 @@ NTSTATUS DispatchIOCTL(PDEVICE_OBJECT pObj, PIRP pIrp)
 
 NTSTATUS DriverEntry(PDRIVER_OBJECT pObj, PUNICODE_STRING pRegistryString)
 {
+	UNREFERENCED_PARAMETER(pRegistryString);
 	NTSTATUS status = STATUS_SUCCESS;
 	UNICODE_STRING ustrLinkName;
 	UNICODE_STRING ustrDevName;

@@ -62,8 +62,8 @@ uint16_t __ROR2__(uint16_t x, unsigned int count);
 
 
 
-#define SCREENX 1920
-#define SCREENY	1080
+#define SCREENX 1440
+#define SCREENY	900
 
 
 // E8 ? ? ? ? 48 8B 8B ? ? ? ? 48 85 C0 74 0D 
@@ -71,98 +71,98 @@ uint16_t __ROR2__(uint16_t x, unsigned int count);
 //000000014014D88F                 mov[rbx], rax
 //000000014014D892                 lea     rax, sub_1418A12A0
 // BRO.ClearIDCLevel
-#define UWORLD					0x62C6DA8
+#define UWORLD					0x626B948
 
 // 48 8D 3D ? ? ? ? 33 C0 B9 ? ? ? ? F3 48 AB 48 8D 3D ? ? ? ? B9 ? ? ? ? F3 48 AB 48 8B 3D + 1FA0
-#define GNAMES					0x617D060 + 0x1FA0
+#define GNAMES					0x6124090 + 0x1FA0
 
 // c1 ? ? 8b ? c1 ? 1f 03 ? 69 ? ? ? ? ? 44 2b f8
-#define GNAMECHUNKSIZE			0x4164
-#define GNAMESUFFIX				0x10
+#define GNAMECHUNKSIZE			0x3E20
+#define GNAMESUFFIX				0x80
 
 // 88 41 10 C7 41 12 01 ? ? ? 66 C7 41 1C ? 01 88 41 16
-#define	AACTORID				0x24
+#define	AACTORID				0xC
 
 // 88 41 10 C7 41 12 01 ? ? ? 66 C7 41 1C ? 01 88 41 16
-#define DECID(v10) __ROL4__(v10 ^ 0x77E17543, 1) ^ (__ROL4__(v10 ^ 0x77E17543, 1) << 16) ^ 0x141EB1FC
+#define DECID(v10) __ROL4__(v10 ^ 0xEEDAE5EE, 7) ^ (__ROL4__(v10 ^ 0xEEDAE5EE, 7) << 16) ^ 0x27D41B5B
 
 //  E8 ? ? ? ? 84 C0 74 16 F6 83 ? ? ? ? ?        ACTORS
 //  E8 ? ? ? ? 39 5C 24 48 7E 29                  LEVEL
-#define LEVEL					0x7C0
-#define ACTORS					0xE0
+#define LEVEL					0x278
+#define ACTORS					0x250
 
 // E8 ? ? ? ? 48 8B C8 33 D2 E8 ? ? ? ? 48 ? ? 48 ? ? 0F
-#define GAMEINSTANCE			0x300
+#define GAMEINSTANCE			0x6F0
 
 // 48 8B C8 33 D2 E8 ? ? ? ? 48 3B C6 0F 85 ? ? ? ?
-#define LOCALPLAYER				0x60
+#define LOCALPLAYER				0xD0
 #define PLAYERCONTROLLER		0x38
 
 // 41 ff 90 ? ? ? ? ? 8b ? ? ? ? ? 48 85 c9 74 ? 48 8b 01 4c 8d
-#define PLAYERCAMERAMANAGER		0x4A0 // mov     rcx, [rdi+490h]
+#define PLAYERCAMERAMANAGER		0x498 // mov     rcx, [rdi+490h]
 //prop 也用这个
 // 48 89 5C 24 10 48 89 4C 24 08 55 56 57 41 54 41 55 41 56 41 57 48 8D 6C 24 D9 48 81 EC 90 ? ? ? 48
-#define SELF					0x450
+#define SELF					0x3E8
 
 // 48 8B 99 ? ? ? ? 48 ? ? 48 ? ? 0F 84 ? ? ? ? 0F 10
-#define MESH					0x4E0 // mov     rbx, [rcx+4A0h]
+#define MESH					0x440 // mov     rbx, [rcx+4A0h]
 
 // 0F 57 C0 0F 2F 81 ? ? ? ? 72 0C
-#define HEALTH					0xC40
-#define GROGGYHEALTH			0xBA8
+#define HEALTH					0xBC4
+#define GROGGYHEALTH			0xAEC
 
 // 44 0F B6 81 ? ? ? ? 41 0F B6 C0 24 01 3A C2 74 13 41 80 E0 FE 44 0A C2 44 88 81 ? ? ? ? E9 ? ? ? ?
-#define DROPPEDITEMARRAY		0x338 // 0x318  jmp     sub_1424CECF0
+#define DROPPEDITEMARRAY		0x170 // 0x318  jmp     sub_1424CECF0
 
 // 48 8B 8F ? ? ? ? 48 63 D3 48 8B 14 D1 48
-#define ITEMPACKAGE				0x528  //  mov     rcx, [rdi+518h]
+#define ITEMPACKAGE				0x518  //  mov     rcx, [rdi+518h]
 
 // 0F B6 F8 48 85 D2 74 13 4C 8B CE 4C 8B C5 49 8B CE ? ? ? ? ? ? ? ? ? ? ? ? ? ? ?
-#define UITEM					0x610  //mov     rdx, [rbx+600h]
+#define UITEM					0x600  //mov     rdx, [rbx+600h]
 
 // LastTeamNum
-#define TEAM					0xE38 // 19A0
+#define TEAM					0xEF8 // 19A0
 
 // 83 F8 03 74 08 48 8B CB E8 ? ? ? ? B0 01 48 8B 4D ? 48 33 CC E8
-#define ROOTCOMPONET			0x230	//mov     rdx, [rbx+148h] 下面一个
+#define ROOTCOMPONET			0x1D8	//mov     rdx, [rbx+148h] 下面一个
 
 // 0F 2F 83 ? ? ? ? 0F 42 C8
-#define LASTRENDERTIME			0x768
+#define LASTRENDERTIME			0x758
 
 // FOV cc cc cc f3 0f 10 ? ? ? ? ? 0f ? ? 0f ? ? 77 08 f3 0f 10 ? ? ? ? ? c3
 // ROT f2 0f 10 81 ? ? ? ? f2 41 0f 11 ? 8b 81 ? ? ? ? 41 89 ? ? c3
 // LOT cc f2 0f 10 81 ? ? ? ? f2 0f 11 ? 8b 81 ? ? ? ? 89 42 ? f2
-#define CAMERACACHE				0xF74
+#define CAMERACACHE				0x9F0
 
 
 // 41 3B 84 C8 ?? ?? ?? ?? 0F 8D ?? ?? ?? ?? 0F 10 ??
-#define BONEARRAY				0xA20     //F3 0F 10 81 ?? ?? ?? ?? F3 0F 10 0D ?? ?? ?? ?? 0F 2F C1
-#define COMPONENTTOWORLD		0x340
+#define BONEARRAY				0xA10     //F3 0F 10 81 ?? ?? ?? ?? F3 0F 10 0D ?? ?? ?? ?? 0F 2F C1
+#define COMPONENTTOWORLD		0x230
 
 // 48 85 C0 74 23 0F 10 88 ?? ?? 00 00 0F 28 C1
-#define RELATIVELOCATION		0x350
+#define RELATIVELOCATION		0x240
 
 //#define CHARACTERMOVEMENT		0x4F0 //0x4b0
 //#define LASTUPDATEVELOCITY		0x3B0
-#define COMPONENTVELOCITY		0x310
-#define ANIMSCRIPTINSTANCE		0xBB8
+#define COMPONENTVELOCITY		0x2B4
+#define ANIMSCRIPTINSTANCE		0xBA8
 #define CONTROLROTATION_CP		0x680
 
 
-#define WEAPONPROCESSOR			0xB60
+#define WEAPONPROCESSOR			0xAD0
 #define EQUIPPEDWEAPONS			0x2A0
-#define WEAPONTRAJECTORYDATA	0xD60
+#define WEAPONTRAJECTORYDATA	0xC58
 #define TRAJECTORYCONFIG		0xB8
 #define VDRAGCOEFFICIENT		0x20
-#define TRAJECTORYGRAVITYZ		0xCEC
+#define TRAJECTORYGRAVITYZ		0xD44
 #define SIMULATIONSUBSTEPTIME	0x1C
 
 
-#define VEHICLERIDERCOMPONENT	0x1600
+#define VEHICLERIDERCOMPONENT	0x1630
 // WeaponIconColorParmName UVehicleRiderComponent
 //48 83 EC 58 48 C7 44 24 ? ? ? ? ? 48 C7 44 24 ? ? ? ? ? 48 C7 44 24 ? ? ? ? ? C6 44 24 ? ? 48 8D 05 ? ? ? ? 48 89 44 24 ? 4C 8D 0D ? ? ? ? 4C 8D 05 ? ? ? ? 48 8D 15 ? ? ? ?
 #define SEATINDEX				0x1F8  // ATslPassBluezoneArea WeaponFire
-#define REPLICATEDMOVEMENT		0x60
+#define REPLICATEDMOVEMENT		0x58
 #define LASTVEHICLEPAWN			0x230
 
 

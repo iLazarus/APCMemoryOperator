@@ -7,8 +7,8 @@ std::threadpool actorsThread{ 20 };
 inline uint64_t decryptFunction(uint64_t ptr)
 {
 	uint64_t v15;
-	LODWORD(v15) = (~(LODWORD(ptr) ^ 0x98A2FC42) - 0x7DBDC522) ^ 0x801F3963;
-	HIDWORD(v15) = (~(HIDWORD(ptr) ^ 0x33733917) - 0x7EE27E62) ^ 0x196EB88A;
+	LODWORD(v15) = __ROL4__(__ROL4__(ptr - 0x5188FC43, 16) + 0x5360C964, 16) ^ 0x9E9C5A7;
+	HIDWORD(v15) = __ROR4__(__ROR4__((ptr >> 32) + 0x13A6C6E8, 8) + 0x36ED4EEF, 8) ^ 0x77B977F9;
 	return v15;
 }
 

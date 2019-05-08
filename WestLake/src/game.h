@@ -224,13 +224,12 @@ public:
 struct FMinimalViewInfo
 {
 public:
-	float FOV;
-	char pad1[0x8];
+
 	FRotator Rotation;
 	char pad2[0x54C];
-	Vector3 Location;
-	
-		
+	Vector3 Location;	
+	char pad1[0x14];
+	float FOV;
 };
 
 struct FCameraCacheEntry
@@ -342,22 +341,23 @@ struct ItemPackage {
 struct AActor {
 	char pad0[0x8];
 	__int32 encryptId; //0x8
-	char pad1[0x324];
-	__int64 encryptRoot; //0x330
-	char pad3[0x10];
-	__int64 droppedItemPtr; //0x348
-	__int32 droppedItemCount; //0x350
-	char pad2[0x1b4];
-	__int64 mesh; //0x508
-	//char pad4[0x98];
-	__int64 itemPackagePtr; // 0x510
-	__int32 itemPackageCount; // 0x518
-	char pad5[0x65c];
-	float health; //0xB78
-	char pad6[0x78];
-	float groggyHealth; //0xBF4
-	char pad7[0x7a0];
-	__int64 team; //0x1398
+	char pad1[0x15C];
+	__int64 encryptRoot; //0x168
+	char pad3[0xB0];
+	__int64 droppedItemPtr; //0x220
+	__int32 droppedItemCount; //0x228
+	char pad2[0x26C];
+	__int64 mesh; //0x498
+	char pad4[0x80];
+	__int64 itemPackagePtr; // 0x520
+	__int32 itemPackageCount; // 0x528
+	char pad5[0x704];
+	__int64 team; //0xC30
+	char pad7[0x9D8];
+	float groggyHealth; //0x1610
+	char pad6[0x5BC];
+	float health; //0x1BD0
+	
 };
 
 #endif // !GAME_H

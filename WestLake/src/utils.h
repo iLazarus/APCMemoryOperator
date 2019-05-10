@@ -190,7 +190,7 @@ private:
 			log.open("scan.txt");
 		}
 
-		for (int i = 0; i < 500000; i++)
+		for (int i = 0; i < 230000; i++)
 		{
 			name = GetGNameById(g_UGname, i);
 			if (name == "Uaz_C" || name == "Uaz_A_01_C" || name == "Uaz_B_01_C" || name == "Uaz_C_01_C") {

@@ -162,7 +162,7 @@ uint16_t __ROR2__(uint16_t x, unsigned int count);
 #define VEHICLERIDERCOMPONENT	0x1630
 // WeaponIconColorParmName UVehicleRiderComponent
 //48 83 EC 58 48 C7 44 24 ? ? ? ? ? 48 C7 44 24 ? ? ? ? ? 48 C7 44 24 ? ? ? ? ? C6 44 24 ? ? 48 8D 05 ? ? ? ? 48 89 44 24 ? 4C 8D 0D ? ? ? ? 4C 8D 05 ? ? ? ? 48 8D 15 ? ? ? ?
-#define SEATINDEX				0x1E8  // ATslPassBluezoneArea WeaponFire
+#define SEATINDEX				0x1F8  // ATslPassBluezoneArea WeaponFire
 #define REPLICATEDMOVEMENT		0x60
 #define LASTVEHICLEPAWN			0x230
 

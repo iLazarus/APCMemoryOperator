@@ -4,11 +4,11 @@
 std::threadpool playerThread{ 20 };
 std::threadpool actorsThread{ 20 };
 
-inline uint64_t decryptFunction(uint64_t ptr)
+inline uint64_t decryptFunction(uint64_t a1)
 {
 	uint64_t v3;
-	LODWORD(v3) = ((ptr & 0x15151515 ^ ptr & 0xEAEAEAEA) + 1543212981) ^ 0x5BFB8FB5;
-	HIDWORD(v3) = HIDWORD(g_UWorld);
+	LODWORD(v3) = ((a1 & 0x15151515 ^ a1 & 0xEAEAEAEA) + 1543212981) ^ 0x5BFB8FB5;
+	HIDWORD(v3) = (((a1 >> 32) & 0x15151515 ^ (a1 >> 32) & 0xEAEAEAEA) - 627778859) ^ 0x256B252B;
 	return v3;
 }
 
@@ -43,6 +43,7 @@ void utils::RefreshOffset()
 	g_APlayerController = dpt.de_controller(PLAYERCONTROLLER);
 	printf("%IX\t%s\r\n", g_APlayerController, "PlayerController");
 	g_UPlayerCameraManager = READ64(g_APlayerController + PLAYERCAMERAMANAGER);
+	//g_UPlayerCameraManager = 0x0000019B633D8E40;
 	printf("%IX\t%s\r\n", g_UPlayerCameraManager, "PlayerCameraManager");
 	g_USelf = dpt.de_prop(g_APlayerController + SELF);
 	printf("%IX\t%s\r\n", g_USelf, "Self");

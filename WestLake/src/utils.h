@@ -11,6 +11,16 @@
 using namespace std;
 
 
+extern "C" unsigned long long decrypt_uworld(unsigned long long uworld_encrypted);
+extern "C" unsigned long long decrypt_gameinst(unsigned long long gameinst_encrypt);
+extern "C" unsigned long long decrypt_level(unsigned long long level_encrypt);
+extern "C" unsigned long long decrypt_actors(unsigned long long actors_encrypt);
+extern "C" unsigned long long decrypt_local(unsigned long long local_encrypt);
+extern "C" unsigned long long decrypt_controller(unsigned long long controller_encrypt);
+extern "C" unsigned long long decrypt_property(unsigned long long geranal_encrypt);
+extern "C" unsigned long long decrypt_objectid(unsigned long long objectid_encrypt);
+
+
 class utils
 {
 public:
@@ -190,7 +200,7 @@ private:
 			log.open("scan.txt");
 		}
 
-		for (int i = 0; i < 230000; i++)
+		for (int i = 0; i < 300000; i++)
 		{
 			name = GetGNameById(g_UGname, i);
 			if (name == "Uaz_C" || name == "Uaz_A_01_C" || name == "Uaz_B_01_C" || name == "Uaz_C_01_C") {

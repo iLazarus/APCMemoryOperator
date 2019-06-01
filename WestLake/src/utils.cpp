@@ -1,16 +1,11 @@
 #include "utils.h"
 #include "threadpool.h"
 
+
+
+
 std::threadpool playerThread{ 20 };
 std::threadpool actorsThread{ 20 };
-
-inline uint64_t decryptFunction(uint64_t a1)
-{
-	uint64_t v19;
-	LODWORD(v19) = (a1 + 0x5683F945) ^ 0x2585F1CB;
-	HIDWORD(v19) = ((a1 >> 32) - 0x61B7CD85) ^ 0x5B155B55;
-	return v19;
-}
 
 
 utils::utils()
@@ -31,66 +26,59 @@ bool utils::Init()
 
 void utils::RefreshOffset()
 {
-	g_UWorld = dpt.de_world(UWORLD);
+	g_UWorld = decrypt_uworld(READ64(GAMEBASE + UWORLD));
 	printf("%IX\t%s\r\n", g_UWorld, "World");
-	printf("%IX\t%s\r\n", g_UWorld, GetGNameById(g_UGname, DECID(READINT(g_UWorld + AACTORID))).c_str());
-	g_ULevel = dpt.de_level(LEVEL);
+	printf("%IX\t%s\r\n", g_UWorld, GetGNameById(g_UGname, decrypt_objectid(READINT(g_UWorld + AACTORID))).c_str());
+
+	g_ULevel = decrypt_level(READ64(g_UWorld + LEVEL));
 	printf("%IX\t%s\r\n", g_ULevel, "Level");
-	g_GameInstance = dpt.de_inst(GAMEINSTANCE);
+	printf("%IX\t%s\r\n", g_ULevel, GetGNameById(g_UGname, decrypt_objectid(READINT(g_ULevel + AACTORID))).c_str());
+
+	g_GameInstance = decrypt_gameinst(READ64(g_UWorld + GAMEINSTANCE));
 	printf("%IX\t%s\r\n", g_GameInstance, "GameInst");
-	g_ULocalPlayer = dpt.de_local(LOCALPLAYER);
+	printf("%IX\t%s\r\n", g_GameInstance, GetGNameById(g_UGname, decrypt_objectid(READINT(g_GameInstance + AACTORID))).c_str());
+
+	g_ULocalPlayer = decrypt_local(READ64(READ64(g_GameInstance + LOCALPLAYER)) );
 	printf("%IX\t%s\r\n", g_ULocalPlayer, "LocalPlayer");
-	g_APlayerController = dpt.de_controller(PLAYERCONTROLLER);
+	printf("%IX\t%s\r\n", g_ULocalPlayer, GetGNameById(g_UGname, decrypt_objectid(READINT(g_ULocalPlayer + AACTORID))).c_str());
+
+	g_APlayerController = decrypt_controller(READ64(g_ULocalPlayer + PLAYERCONTROLLER) );
 	printf("%IX\t%s\r\n", g_APlayerController, "PlayerController");
+	printf("%IX\t%s\r\n", g_APlayerController, GetGNameById(g_UGname, decrypt_objectid(READINT(g_APlayerController + AACTORID))).c_str());
+
 	g_UPlayerCameraManager = READ64(g_APlayerController + PLAYERCAMERAMANAGER);
-	//g_UPlayerCameraManager = 0x0000019B633D8E40;
 	printf("%IX\t%s\r\n", g_UPlayerCameraManager, "PlayerCameraManager");
-	g_USelf = dpt.de_prop(g_APlayerController + SELF);
+	printf("%IX\t%s\r\n", g_UPlayerCameraManager, GetGNameById(g_UGname, decrypt_objectid(READINT(g_UPlayerCameraManager + AACTORID))).c_str());
+
+	g_USelf = decrypt_property(READ64(g_APlayerController + SELF));
 	printf("%IX\t%s\r\n", g_USelf, "Self");
+	printf("%IX\t%s\r\n", g_USelf, GetGNameById(g_UGname, decrypt_objectid(READINT(g_USelf + AACTORID))).c_str());
+
 	g_MeshSelf = READ64(g_USelf + MESH);
 	printf("%IX\t%s\r\n", g_MeshSelf, "MeshSelf");
+	printf("%IX\t%s\r\n", g_MeshSelf, GetGNameById(g_UGname, decrypt_objectid(READINT(g_MeshSelf + AACTORID))).c_str());
 
 	g_BestAimTarget = PlayerData {};
 
 	printf("%s\r\n\r\n%s\r\n\r\n", "初始化成功", "Home刷新 F5物品 F6车辆 F8瞄准");
 }
 
+#define DECID(v10) __ROR4__(v10 ^ 0x3B71BAF3, 13) ^ (__ROR4__(v10 ^ 0x3B71BAF3, 13) << 16) ^ 0x7B4B64C1
+
+uint64_t de_prop(uint64_t prop)
+{
+	if (!prop) return 0;
+
+	__int64 v12; // [rsp+A0h] [rbp+8h]
+	LODWORD(v12) = (prop - 343154907) ^ 0xEB8BDF25;
+	HIDWORD(v12) = (HIDWORD(prop) + 1778674245) ^ 0x95FB95BB;
+	return v12;
+}
+
+
+
 void utils::DebugOffset()
 {
-	
-	printf("self ---------------------\r\n");
-	for (int i = 0; i < 0x1000; i++)
-	{
-		uint64_t targ = dpt.de_prop(g_APlayerController + i);
-		if (targ)
-		{
-			int id = DECID(READINT(targ + AACTORID));
-			if (id > 224000) continue;
-			string r = GetGNameById(g_UGname, id);
-			if (r.length() > 1 && r.length() < 30)
-			{
-				printf("%X\t%s\r\n", i, r.c_str());
-			}
-		}
-	}
-	printf("cameraManager ---------------\r\n");
-
-	for (int i = 0; i < 0x1000; i++)
-	{
-		uint64_t targ = READ64(g_APlayerController + i);
-		if (targ)
-		{
-			int id = DECID(READINT(targ + AACTORID));
-			if (id > 224000) continue;
-			string r = GetGNameById(g_UGname, id);
-			if (r.length() > 1 && r.length() < 30)
-			{
-				printf("%X\t%s\r\n", i, r.c_str());
-			}
-		}
-	}
-
-	printf("f r l --------------------\r\n");
 
 	printf("f r l --------------------\r\n");
 
@@ -127,24 +115,29 @@ void utils::DebugOffset()
 		}
 	}
 
+
 	printf("team and charactermovement ---------------------\r\n");
 
 	for (int i = 0; i < 0x3000; i++)
 	{
-		uint64_t targ = dpt.de_prop(g_USelf + i);
+		uint64_t targ = decrypt_property(READ64(g_USelf + i));
 		if (targ)
 		{
-			int id = DECID(READINT(targ + AACTORID));
-			if (id > 224000) continue;
+
+			int id = decrypt_objectid(READINT(targ + AACTORID));
+			if (id > 224000 || id < 1) continue;
 			string r = GetGNameById(g_UGname, id);
 			if (r.length() > 1 && r.length() < 30)
 			{
 				printf("%X\t%s\r\n", i, r.c_str());
 			}
+
+
 		}
 	}
-	printf("---------------------\r\n");
 
+
+	printf("End.......\n");
 }
 
 bool SortRule(PlayerData a, PlayerData b)
@@ -186,7 +179,7 @@ void utils::ActorLoop()
 		dx.DrawString(false, 45, 50, RED, "车辆");
 	}
 
-	uint64_t aactor_ptr = dpt.de_actor(ACTORS);
+	uint64_t aactor_ptr = decrypt_actors(READ64(g_ULevel + ACTORS) );
 	int entitycount = READINT(aactor_ptr + 0x8);
 	dx.DrawString(false, 5, 20, RED, "count = %d", entitycount);
 	//dx.DrawString(false, 5, 50, RED, "speed = %f", GetBulletSpeed(g_USelf));
@@ -197,17 +190,23 @@ void utils::ActorLoop()
 	aimList.clear();
 	//actorCount = 0;
 
-	uint64_t actorarry [3500];
-	READSIZE(actors, &actorarry, 3500 * sizeof(uint64_t));
 	READSIZE(g_UPlayerCameraManager + CAMERACACHE, &FCameraCache, sizeof(FCameraCacheEntry));
+	/*
+	FFC     Roator
+	1554    Location
+	156C    Fov
+	*/
+	
+	//FCameraCache.POV.Rotation = drv.RPM<Vector3>(g_UPlayerCameraManager + 0xFFC);
+	//FCameraCache.POV.Location = READT(Vector3, g_UPlayerCameraManager + 0x156C, 0xC);
+	//FCameraCache.POV.FOV = READFLT(g_UPlayerCameraManager + 0x156C);
+
 	for (int i = 0; i < entitycount; i++)
 	{		
-		uint64_t actor = actorarry[i];
+		uint64_t actor = READ64(actors + i * 8);
 		if (!actor || actor == g_USelf) continue;
 
-		AActor aa;
-		READSIZE(actor, &aa, sizeof(AActor));
-		int id = DECID(aa.encryptId);
+		int id = decrypt_objectid(READ64(actor + AACTORID));
 
 		if (id > 0 && id < CachedNames.size())
 		{
@@ -216,14 +215,14 @@ void utils::ActorLoop()
 				if (esp && isPlayer(id))
 				{
 					Vector3 localLocation = FCameraCache.POV.Location;
-					uint64_t root = decryptFunction(aa.encryptRoot);
+					uint64_t root = decrypt_property(READ64(actor + ROOTCOMPONET));
 
-					Vector3 actor_location = READT(Vector3, root + RELATIVELOCATION, sizeof(Vector3));
+ 					Vector3 actor_location = READT(Vector3, root + RELATIVELOCATION, sizeof(Vector3));
 					Vector3 actorScreen = WorldToScreen(actor_location, FCameraCache);
 					float distance = (actor_location - localLocation).Length() / 100.0f;
-					if (decryptFunction(aa.team)) continue;
-					float health = aa.health;
-					float groggyHealth = aa.groggyHealth;
+					if (decrypt_property(READ64(actor + TEAM))) continue;
+					float health = READFLT(actor + HEALTH);
+					float groggyHealth = READFLT(actor + GROGGYHEALTH);
 
 					if (abs(actor_location.x - localLocation.x) < 25001 && abs(actor_location.y - localLocation.y) < 25001 && (health > 0 || groggyHealth > 0))
 					{
@@ -235,7 +234,7 @@ void utils::ActorLoop()
 
 					if (inScreen(actorScreen))
 					{
-						DWORD_PTR mesh = aa.mesh;
+						DWORD_PTR mesh = READ64(actor + MESH);
 						bool canVisual = READFLT(mesh + LASTRENDERTIME) == READFLT(g_MeshSelf + LASTRENDERTIME);
 						int headId = 15;
 						Vector3 headLocation = GetBoneWithRotation(mesh, headId);
@@ -286,7 +285,7 @@ void utils::ActorLoop()
 				if (vehicle && isVehicle(id))
 				{
 					Vector3 localLocation = FCameraCache.POV.Location;
-					uint64_t root = decryptFunction(aa.encryptRoot);
+					uint64_t root = decrypt_property(READ64(actor + ROOTCOMPONET));
 					Vector3 actor_location = READT(Vector3, root + RELATIVELOCATION, sizeof(Vector3));
 					Vector3 actorScreen = WorldToScreen(actor_location, FCameraCache);
 					float distance = (actor_location - localLocation).Length() / 100.0f;
@@ -307,7 +306,7 @@ void utils::ActorLoop()
 							uint64_t targ = READ64(READ64(actor + i));
 							if (targ)
 							{
-								int id = DECID(READINT(targ + AACTORID));
+								int id = decrypt_objectid(READINT(targ + AACTORID));
 								string r = GetGNameById(g_UGname, id);
 								if (r.length() > 1 && r.length() < 30)
 								{
@@ -318,20 +317,20 @@ void utils::ActorLoop()
 					}
 
 					Vector3 localLocation = FCameraCache.POV.Location;
-					uint64_t root = decryptFunction(aa.encryptRoot);
+					uint64_t root = decrypt_property(READ64(actor + ROOTCOMPONET));
 					Vector3 actor_location = READT(Vector3, root + RELATIVELOCATION, sizeof(Vector3));
 
-					int count = aa.droppedItemCount;
+					int count = READINT(actor + DROPPEDITEMARRAY + 8);
 					if (count < 1) continue;
 					int z = 0;
 
 					DroppedItem di[64];
-					READSIZE(aa.droppedItemPtr, &di, 0x10 * count);
+					READSIZE(READ64(actor + DROPPEDITEMARRAY), &di, 0x10 * count);
 
 					for (int j = 0; j < count; j++)
 					{
 						uint64_t UItem = READ64(di[j].group + UITEM);
-						int uid = DECID(READINT(UItem + AACTORID));
+						int uid = decrypt_objectid(READINT(UItem + AACTORID));
 
 						if (uid < CachedNames.size() && strlen(CachedNames[uid].c_str()) < 7)
 						{
@@ -351,7 +350,7 @@ void utils::ActorLoop()
 				if (itemgoods &&  isLoot(id))
 				{
 					Vector3 localLocation = FCameraCache.POV.Location;
-					uint64_t root = decryptFunction(aa.encryptRoot);
+					uint64_t root = decrypt_property(READ64(actor + ROOTCOMPONET));
 					//uint64_t root = dpt.de_prop(actor + ROOTCOMPONET);
 					Vector3 actor_location = READT(Vector3, root + RELATIVELOCATION, sizeof(Vector3));
 					Vector3 actorScreen = WorldToScreen(actor_location, FCameraCache);
@@ -361,14 +360,14 @@ void utils::ActorLoop()
 					{
 						if (distance < 250.0f)
 						{
-							DWORD_PTR Items = aa.itemPackagePtr;
-							int Count = aa.itemPackageCount;
+							DWORD_PTR Items = READ64(actor + ITEMPACKAGE);
+							int Count = READINT(actor + ITEMPACKAGE + 8);
 							if (Count < 1 || Count > 64) continue;
 							uint64_t itemarray[64];
 							READSIZE(Items, &itemarray, 8 * Count);
 							for (int j = 0; j < Count; j++)
 							{
-								int uid = DECID(READINT(itemarray[j] + AACTORID));
+								int uid = decrypt_objectid(READINT(itemarray[j] + AACTORID));
 								if (uid < CachedNames.size() && strlen(CachedNames[uid].c_str()) < 7)
 								{
 									actorScreen.y += 14;
@@ -383,7 +382,7 @@ void utils::ActorLoop()
 				if (itemgoods &&  isAircaft(id))
 				{
 					Vector3 localLocation = FCameraCache.POV.Location;
-					uint64_t root = decryptFunction(aa.encryptRoot);
+					uint64_t root = decrypt_property(READ64(actor + ROOTCOMPONET));
 					Vector3 actor_location = READT(Vector3, root + RELATIVELOCATION, sizeof(Vector3));
 					Vector3 actorScreen = WorldToScreen(actor_location, FCameraCache);
 					float distance = (actor_location - localLocation).Length() / 100.0f;
@@ -391,14 +390,14 @@ void utils::ActorLoop()
 					if (inScreen(actorScreen))
 					{
 
-						DWORD_PTR Items = aa.itemPackagePtr;
-						int Count = aa.itemPackageCount;
+						DWORD_PTR Items = READ64(actor + ITEMPACKAGE);
+						int Count = READINT(actor + ITEMPACKAGE + 8);
 						if (Count < 1 || Count > 64) continue;
 						uint64_t itemarray[64];
 						READSIZE(Items, &itemarray, 8 * Count);
 						for (int j = 0; j < Count; j++)
 						{
-							int uid = DECID(READINT(itemarray[j] + AACTORID));
+							int uid = decrypt_objectid(READINT(itemarray[j] + AACTORID));
 							if (uid < CachedNames.size() && strlen(CachedNames[uid].c_str()) < 7)
 							{
 								actorScreen.y += 14;
@@ -415,6 +414,7 @@ void utils::ActorLoop()
 
 		}
 	}
+
 	aimList.sort(SortRule);
 
 	//dx.DrawString(true, 10, 300, RED, "%d", actorCount);

@@ -2,7 +2,6 @@
 
 driver drv;
 graphics dx;
-decrypt dpt;
 mutex mx;
 mutex mxdx;
 

@@ -21,9 +21,6 @@
     <ClCompile Include="src\graphics.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="src\decrypt.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="src\driver.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -41,9 +38,6 @@
     <ClInclude Include="src\common.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="src\decrypt.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="src\driver.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -56,5 +50,10 @@
     <ClInclude Include="src\threadpool.h">
       <Filter>头文件</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <MASM Include="asm\decrypt.asm">
+      <Filter>源文件</Filter>
+    </MASM>
   </ItemGroup>
 </Project>

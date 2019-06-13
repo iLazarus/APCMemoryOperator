@@ -16,6 +16,7 @@ VOID NotifyImageLoadCallback(PUNICODE_STRING FullImageName, HANDLE ProcessId, PI
 			{
 				hPid = ProcessId;
 				lMoudleBase = (DWORD64)PsGetProcessSectionBaseAddress(targetProcess);
+				dImageSize = ImageInfo->ImageSize;
 			}
 			KeDetachProcess();
 		}
@@ -197,6 +198,35 @@ NTSTATUS DispatchIOCTL(PDEVICE_OBJECT pObj, PIRP pIrp)
 			KeStackAttachProcess(hClient, &apc_state);
 			ProbeForRead((CONST PVOID)buffer->Destination, buffer->Length, sizeof(CHAR));
 			RtlCopyMemory((PVOID)buffer->Destination, &lMoudleBase, buffer->Length);
+			KeUnstackDetachProcess(&apc_state);
+		}
+		__except (EXCEPTION_EXECUTE_HANDLER)
+		{
+			KeUnstackDetachProcess(&apc_state);
+			break;
+		}
+
+		status = STATUS_SUCCESS;
+		break;
+	}
+
+	case IOCTL_IO_IMAGESIZE:
+	{
+		PEPROCESS hClient, hGame;
+		KAPC_STATE apc_state;
+
+		if (lMoudleBase == 0 || hPid == 0) break;
+
+		PsLookupProcessByProcessId(hPid, &hGame);
+		PsLookupProcessByProcessId((HANDLE)buffer->DestinationPid, &hClient);
+
+		if (DriverBuffer == NULL) break;
+
+		__try
+		{
+			KeStackAttachProcess(hClient, &apc_state);
+			ProbeForRead((CONST PVOID)buffer->Destination, buffer->Length, sizeof(CHAR));
+			RtlCopyMemory((PVOID)buffer->Destination, &dImageSize, buffer->Length);
 			KeUnstackDetachProcess(&apc_state);
 		}
 		__except (EXCEPTION_EXECUTE_HANDLER)

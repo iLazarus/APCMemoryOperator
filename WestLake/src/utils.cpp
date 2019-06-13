@@ -63,20 +63,6 @@ void utils::RefreshOffset()
 	printf("%s\r\n\r\n%s\r\n\r\n", "初始化成功", "Home刷新 F5物品 F6车辆 F8瞄准");
 }
 
-#define DECID(v10) __ROR4__(v10 ^ 0x3B71BAF3, 13) ^ (__ROR4__(v10 ^ 0x3B71BAF3, 13) << 16) ^ 0x7B4B64C1
-
-uint64_t de_prop(uint64_t prop)
-{
-	if (!prop) return 0;
-
-	__int64 v12; // [rsp+A0h] [rbp+8h]
-	LODWORD(v12) = (prop - 343154907) ^ 0xEB8BDF25;
-	HIDWORD(v12) = (HIDWORD(prop) + 1778674245) ^ 0x95FB95BB;
-	return v12;
-}
-
-
-
 void utils::DebugOffset()
 {
 
@@ -208,7 +194,7 @@ void utils::ActorLoop()
 
 		int id = decrypt_objectid(READ64(actor + AACTORID));
 
-		if (id > 0 && id < CachedNames.size())
+		if (id > 1 && id < CachedNames.size())
 		{
 			if (isPlayer(id) || isVehicle(id) || isItems(id) || isLoot(id) || isAircaft(id))
 			{
@@ -269,6 +255,7 @@ void utils::ActorLoop()
 
 							if (skeltch && distance < 250)
 							{
+								//dx.DrawLine(actorScreen.x - 1, actorScreen.y, actorScreen.x + 1, actorScreen.y, GREEN);
 								DrawSkeleton(mesh, canVisual);
 							}
 						}
@@ -332,7 +319,7 @@ void utils::ActorLoop()
 						uint64_t UItem = READ64(di[j].group + UITEM);
 						int uid = decrypt_objectid(READINT(UItem + AACTORID));
 
-						if (uid < CachedNames.size() && strlen(CachedNames[uid].c_str()) < 7)
+						if (uid < CachedNames.size() && strlen(CachedNames[uid].c_str()) < 7 && uid > 0)
 						{
 							Vector3 goods_location = READT(Vector3, di[j].group + RELATIVELOCATION, sizeof(Vector3));
 							Vector3 goods_screen = WorldToScreen(goods_location, FCameraCache);
@@ -368,7 +355,7 @@ void utils::ActorLoop()
 							for (int j = 0; j < Count; j++)
 							{
 								int uid = decrypt_objectid(READINT(itemarray[j] + AACTORID));
-								if (uid < CachedNames.size() && strlen(CachedNames[uid].c_str()) < 7)
+								if (uid < CachedNames.size() && strlen(CachedNames[uid].c_str()) < 7 && uid > 0)
 								{
 									actorScreen.y += 14;
 
@@ -398,7 +385,7 @@ void utils::ActorLoop()
 						for (int j = 0; j < Count; j++)
 						{
 							int uid = decrypt_objectid(READINT(itemarray[j] + AACTORID));
-							if (uid < CachedNames.size() && strlen(CachedNames[uid].c_str()) < 7)
+							if (uid < CachedNames.size() && strlen(CachedNames[uid].c_str()) < 7 && uid > 0)
 							{
 								actorScreen.y += 14;
 
@@ -407,7 +394,7 @@ void utils::ActorLoop()
 						}
 
 
-						dx.DrawString(true, actorScreen.x, actorScreen.y, BLUE, "%s [%0.0f]", "空投", distance);
+						dx.DrawString(true, actorScreen.x, actorScreen.y - 14, BLUE, "%s [%0.0f]", "空投", distance);
 					}
 				}
 			}
